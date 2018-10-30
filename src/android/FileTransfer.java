@@ -549,11 +549,13 @@ public class FileTransfer extends CordovaPlugin {
                     //sendcontent(context,result.toJSONObject(),sourceLen,count);
 
                 } catch (FileNotFoundException e) {
-                    JSONObject error = createFileTransferError(FILE_NOT_FOUND_ERR, source, target, conn, e);
+                    FuShuException fs =  new FuShuException("未找到文件或目录");
+                    JSONObject error = createFileTransferError(FILE_NOT_FOUND_ERR, source, target, conn, fs);
                     LOG.e(LOG_TAG, error.toString(), e);
                     context.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
                 } catch (IOException e) {
-                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn, e);
+                    FuShuException fs =  new FuShuException("上传文件错误");
+                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn, fs);
                     LOG.e(LOG_TAG, error.toString(), e);
                     LOG.e(LOG_TAG, "Failed after uploading " + totalBytes + " of " + fixedLength + " bytes.");
                     context.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
@@ -561,8 +563,9 @@ public class FileTransfer extends CordovaPlugin {
                     LOG.e(LOG_TAG, e.getMessage(), e);
                     context.sendPluginResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
                 } catch (Throwable t) {
+                    FuShuException fs =  new FuShuException("上传文件错误");
                     // Shouldn't happen, but will
-                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn, t);
+                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn, fs);
                     LOG.e(LOG_TAG, error.toString(), t);
                     context.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
                 } finally {
@@ -970,5 +973,13 @@ public class FileTransfer extends CordovaPlugin {
                 }
             });
         }
+    }
+}
+class FuShuException extends Exception {//getMessage();
+    public FuShuException() {
+        super();
+    }
+    public FuShuException(String msg) {
+        super(msg);
     }
 }
